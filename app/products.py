@@ -1,6 +1,10 @@
-from flask import render_template
-
+from flask import render_template, redirect, url_for, flash
+from flask_wtf import FlaskForm, Form
+from wtforms import IntegerField, SubmitField, StringField, TextAreaField
 from .models.product import Product
+from .models.feedbackToProduct import feedbackToProduct
+from wtforms.validators import ValidationError, DataRequired, NumberRange
+from flask_login import current_user
 
 from flask import Blueprint
 bp = Blueprint('products', __name__)
@@ -26,16 +30,28 @@ def addToCart(sid,pid):
 
 
 class feedbackToProductForm(FlaskForm):
-    feedback = TextAreaField(label='Please write your feedback to this product', validators=[DataRequired()])
-    submit =  'Submit'
+    ratings = IntegerField('Please rate this product from 1-5',
+                            validators=[DataRequired(), NumberRange(min=1, max = 5, message='exceeds valid range')])
+    feedback = TextAreaField('Please write your feedback to this product', validators=[DataRequired()])
+    submit = SubmitField('submit')
 
-@bp.route('/子地址/<pid>', )
+@bp.route('/writefeedback/<pid>', methods=['GET', 'POST'])
 def writeFeedback(pid):
+    if not current_user.is_authenticated:
+        return redirect(url_for('users.login'))
     form = feedbackToProductForm()
     uid = current_user.id
     if form.validate_on_submit():
         #send feedback to db
         text = form.feedback.data
-        AddFeedbackToProduct(uid,pid,text)
+        ratings = form.ratings.data
+        result = feedbackToProduct.AddFeedbackToProduct(uid, pid, ratings, text)
+        if not result:
+            flash('sorry, something went wrong')
+        else:
+            flash('submit already')
+            product = Product.get(pid)
+            seller_info = Product.getSellerInfo(pid)
+            render_template('productdetails.html',avail_products=[product],seller_info=seller_info)
     return render_template('feedbackToProduct.html',form=form, pid=pid)
 

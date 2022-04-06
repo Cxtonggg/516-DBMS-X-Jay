@@ -9,21 +9,21 @@ class feedbackToProduct():
         self.time = time
         self.vote = vote
 
-        @staticmethod
-    def AddFeedbackToProduct(uid, pid, ratings, text, vote):
+    @staticmethod
+    def AddFeedbackToProduct(uid, pid, ratings, text):
         #INSERT INTO table xxxxx RETURNING xxid
         try:
             rows = app.db.execute('''
-INSERT INTO Product_Feedback(uid, pid, ratings, review, vote)
-VALUES (:uid, :pid, :ratings, :review, :vote)
+INSERT INTO Product_Feedback(uid, pid, ratings, review)
+VALUES (:uid, :pid, :ratings, :review)
 RETURNING pid
 ''',
-        uid=uid, pid=pid, ratings=ratings, review=text, vote=vote)
+        uid=uid, pid=pid, ratings=ratings, review=text)
         
-        return rows
-    except Exception as e:
-        print(str(e))
-        return None
+            return rows
+        except Exception as e:
+            print(str(e))
+            return None
 
     
 
