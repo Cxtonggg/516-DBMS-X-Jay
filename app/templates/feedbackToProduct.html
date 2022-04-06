@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+<br><br>
+<!-----return-------->
+<br>
+<!-----text-------->
+<p>How do you feel about this product?</p>
+<br>
+{{form.feedback.label}}
+<br>
+{{form.feedback.label}}
+{{form.feedback(size=35)}}
+
+{{form.submit()}}
+<br>
+<p>另一行</p>
+
+{% endblock %}
