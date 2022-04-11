@@ -4,10 +4,11 @@ from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField,PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo,NumberRange
+from wtforms import IntegerField, SubmitField, StringField, TextAreaField
 
 from .models.user import User
 from werkzeug.datastructures import MultiDict
-
+from .models.feedbackToSeller import feedbackToSeller
 from flask import Blueprint
 bp = Blueprint('users', __name__)
 
@@ -153,10 +154,41 @@ def balanceWithdraw():
     return render_template('balanceWithdraw.html',title='balance withdraw',form=form)
         
 
+#define form
+class feedbackToSellerForm(FlaskForm):
+    ratings = IntegerField('Please rate this seller from 1-5',
+                            validators=[DataRequired(), NumberRange(min=1, max = 5, message='exceeds valid range')])
+    feedback = TextAreaField('Please write your feedback to this seller', validators=[DataRequired()])
+    submit = SubmitField('submit')
+
 @bp.route('/<variable>/publicProfile', methods=['GET','POST'])
+#variable is sid here
 def publicProfile(variable):
     info = User.get(variable)
     if info is None:
         flash('The user does not exist!')
         return
-    return render_template('publicProfile.html',title='publicProfile',info=info)
+
+    if not current_user.is_authenticated:
+        return redirect(url_for('users.login'))
+    
+    form = feedbackToSellerForm()
+    uid = current_user.id
+    purchased, commented = feedbackToSeller.VerifyPurchase(uid, int(variable))
+    flash("default")
+    if form.validate_on_submit():
+        flash("validate on submit")
+        #send feedback to db
+        text = form.feedback.data
+        ratings = form.ratings.data
+        result = feedbackToSeller.AddFeedbackToSeller(uid, int(variable), ratings, text)
+        if not result:
+            flash('sorry, something went wrong')
+        else:
+            flash('submit already')
+            # redirect to 
+            info = User.get(variable)
+            purchased, commented = feedbackToSeller.VerifyPurchase(uid, int(variable))
+            return render_template('publicProfile.html',form = form, info=info, purchased = purchased, commented = commented)
+    return render_template('publicProfile.html',form=form, info=info, purchased = purchased, commented = commented)
+

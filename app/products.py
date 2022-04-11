@@ -52,6 +52,6 @@ def writeFeedback(pid):
             flash('submit already')
             product = Product.get(pid)
             seller_info = Product.getSellerInfo(pid)
-            render_template('productdetails.html',avail_products=[product],seller_info=seller_info)
+            return render_template('productdetails.html',avail_products=[product],seller_info=seller_info)
     return render_template('feedbackToProduct.html',form=form, pid=pid)
 

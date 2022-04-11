@@ -8,9 +8,56 @@
 <p>Email:{{info.email}}</p>
 <p>Address: {{info.address}}</p>
 
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+  {% for message in messages %}
+  <li>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
 
 <h1>Feedbacks</h1>
+<br>
 
+{% if purchased|length != 0 %} 
+  {% if commented|length != 0 %} 
+  <h2>Thanks for sharing your feedback of this seller! You can update your feedback here</h2>
+  <a href="{{ url_for('users.profile') }}" type="button" class="btn btn-light">Click here to view/update your feedback</a>
+  {% else %}
+
+  <h4>You have purchased products from this seller! How would you rate this seller?</h4>
+  <form action="" method="post">
+  {{ form.hidden_tag() }}
+  <p>
+      
+      {{ form.ratings.label }}<br/>
+      {{ form.ratings(size=32) }}<br/>
+      {% for error in form.ratings.errors %}
+      <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}
+      {{form.feedback.label}}
+      {{form.feedback(size=35)}}
+      </p>
+
+      <p>{{ form.submit() }}</p>
+  </form>
+  {% endif %}
+
+{% else %}
+<p>not bought</p>
+{% endif %}
+
+
+
+
+
+
+
+
+   
+    
 {% endblock %}
 
 

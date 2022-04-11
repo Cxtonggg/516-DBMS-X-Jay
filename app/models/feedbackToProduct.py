@@ -25,5 +25,23 @@ RETURNING pid
             print(str(e))
             return None
 
+    @staticmethod
+    def UpdateFeedback(uid, pid, ratings, text):
+        try:
+            rows = app.db.execute("""
+UPDATE Product_Feedback SET ratings=:ratings, text=:text
+WHERE Product_Feedback.uid = :uid and Product_Feedback.pid = :pid
+RETURNING uid 
+""",
+                                  ratings = ratings,
+                                  text = text,
+                                  uid = uid, pid = pid)
+            return rows
+        except Exception as e:
+            print(str(e))
+            return None
+
+    
+
     
 
