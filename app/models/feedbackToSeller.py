@@ -47,12 +47,29 @@ WHERE uid = :uid and sid = :sid
             return None, None
 
     @staticmethod
+    def GetFeedback(uid, sid):
+        try:
+            rows = app.db.execute("""
+SELECT ratings, review
+FROM Seller_Feedback
+WHERE uid = :uid and sid = :sid
+""",
+
+
+                                  uid = int(uid), sid = int(sid))
+            return rows[0][0], rows[0][1]
+        except Exception as e:
+            print(str(e))
+            return None, None
+
+
+    @staticmethod
     def UpdateFeedback(uid, sid, ratings, text):
         try:
             rows = app.db.execute("""
-UPDATE Seller_Feedback SET ratings=:ratings, text=:text
+UPDATE Seller_Feedback SET ratings=:ratings, review=:text
 WHERE Seller_Feedback.uid = :uid and Seller_Feedback.sid = :sid
-RETURNING id ?
+RETURNING sid 
 """,
                                   ratings = ratings,
                                   text = text,
@@ -63,25 +80,58 @@ RETURNING id ?
             return None
 
     @staticmethod
-    def vote(uid, sid, ratings):
+    def GetVote(uid, sid):
         try:
             rows = app.db.execute("""
-UPDATE Seller_Feedback SET vote=:ratings, text=:text
-WHERE Seller_Feedback.uid = :uid and Seller_Feedback.sid = :sid
-RETURNING id
+SELECT vote
+FROM Seller_Feedback
+WHERE uid = :uid and sid = :sid
 """,
-                                  ratings = ratings,
-                                  text = text,
-                                  uid = uid, sid = sid)
-            id = rows[0][0]
-            return User.get(id)
+
+
+                                  uid = int(uid), sid = int(sid))
+            return rows[0][0]
         except Exception as e:
             print(str(e))
             return None
 
-        
+    @staticmethod
+    def vote(uid, sid, vote):
+        try:
+            rows = app.db.execute("""
+UPDATE Seller_Feedback SET vote=:vote
+WHERE Seller_Feedback.uid = :uid and Seller_Feedback.sid = :sid
+RETURNING vote
+""",
+                                  vote = vote,
+                                  uid = uid, sid = sid)
+            return rows[0][0]
+        except Exception as e:
+            print(str(e))
+            return None
 
-    
+    @staticmethod
+    def removeFeedback(uid,sid):
+        deletequery = app.db.execute('''
+DELETE FROM Seller_Feedback
+WHERE uid=:uid AND sid=:sid 
+''',
+                uid=uid, sid=sid)
+        return deletequery if deletequery is not None else None
 
-    
+    @staticmethod
+    def SummaryRatings(sid):
+        try:
+            rows = app.db.execute('''
+SELECT COUNT(ratings), AVG(ratings)
+FROM Seller_Feedback
+WHERE sid = :sid
+GROUP BY sid
+''',
+                    sid = sid)
+            return rows[0][0], rows[0][1]
+        except Exception as e:
+            print(str(e))
+            return None, None
+
 

@@ -12,6 +12,7 @@
       <th scope="col">Product ID</th>
       <th scope="col">Product Name</th>
       <th scope="col">Image</th>
+      <th scope="col">Average Rating</th>
     </tr>
   </thead>
   <tbody>
@@ -20,6 +21,7 @@
         <th scope="row">{{product.id}}</th>
         <td>{{product.name}}<br></td>
         <td><img src="{{url_for('static', filename='images/'+product.id|string+'.png')}}" alt='no product image.' width="256" height="256" /></td>
+        <td>{{'%0.2f' % product.avgrating if product.avgrating else ""}}</td>
       </tr>
     {% endfor %}
   </tbody>
@@ -40,7 +42,12 @@
   <tbody>
     {% for seller in seller_info %}
     <tr>
-        <td><a href= "{{url_for('users.publicProfile', variable=seller[0]) }}">{{seller[1]}} {{seller[2]}} </a> </td>
+      <td><a href= "{{url_for('users.publicProfile', variable=seller[0]) }}">{{seller[1]}} {{seller[2]}} </a>
+        {% if current_user.is_authenticated and current_user.id==seller[0] %}
+          <br>
+          <a href="{{url_for('products.editproductdetails', sid=seller[0], pid=avail_products[0].id) }}" class="btn btn-primary btn-lg" role="button">Edit Product Details</a> 
+        {% endif %}          
+      </td>
         <td> {{seller[3]}} </td>
         <td> {{seller[4]}} </td>
         <td> {{seller[5]}} </td>
@@ -54,14 +61,46 @@
 <h4> Does not belong to any seller </h4>
 {% endif %}
 
+
+
+{% if ratings_and_reviews|length != 0 %}
+<h4>Ratings and Reviews:</h4>
+<p>This product has {{Numreviews}} reviews</p>
+<p>Average Rating: {{'%0.2f' % Avgratings}} </p>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Uid</th>
+      <th scope="col">Rating</th>
+      <th scope="col">Review</th>
+      <th scope="col">Date</th>
+      <th scope="col">Vote</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for rnr in ratings_and_reviews %}
+    <tr>
+        <td> {{rnr['uid']}} </td>
+        <td> {{rnr['rating']}} </td>
+        <td> {{rnr['review']}} </td>
+        <td> {{rnr['date']}} </td>
+        <td> {{rnr['vote']}} </td>
+        <td> <a href="{{ url_for('products.productVote', uid = rnr['uid'], pid = avail_products[0].id) }}" type="button" class="btn btn-light">vote</a></td>
+
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% else %}
+<h4> No ratings or reviews for this product. </h4>
+{% endif %}
 <a href="{{url_for('products.writeFeedback', pid = avail_products[0].id) }}" class="btn btn-primary btn-lg" role="button">Write feedback</a>
-
-<br><br>
-
+&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="{{ url_for('inventory.add_product_to_inventory', pid = avail_products[0].id) }}" class="btn btn-primary btn-lg" role="button">I want to sell this product</a>
 
-<br><br>
 
-<a href="{{ url_for('index.index') }}" class="btn btn-primary btn-lg" role="button">Back to index</a>
+
 
 {% endblock %}

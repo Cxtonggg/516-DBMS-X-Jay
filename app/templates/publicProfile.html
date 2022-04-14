@@ -3,8 +3,10 @@
 {% block content %}
 
 <h1>Public view </h1>
+
 <p>Firstname: {{info.firstname}}</p>
 <p>Lastname: {{info.lastname}}</p>
+{% if isSeller|length > 0 %}
 <p>Email:{{info.email}}</p>
 <p>Address: {{info.address}}</p>
 
@@ -18,13 +20,11 @@
 {% endif %}
 {% endwith %}
 
-<h1>Feedbacks</h1>
 <br>
-
-{% if purchased|length != 0 %} 
-  {% if commented|length != 0 %} 
+{% if purchased|length != 0 %}
+  {% if commented|length != 0 %}
   <h2>Thanks for sharing your feedback of this seller! You can update your feedback here</h2>
-  <a href="{{ url_for('users.profile') }}" type="button" class="btn btn-light">Click here to view/update your feedback</a>
+  <a href="{{ url_for('users.profile') }}" type="button" class="btn btn-light">Go to update your feedback</a>
   {% else %}
 
   <h4>You have purchased products from this seller! How would you rate this seller?</h4>
@@ -46,18 +46,50 @@
   {% endif %}
 
 {% else %}
-<p>not bought</p>
+<p>You don't have any order with this seller.</p>
+{% endif %}
+<br><br>
+
+<h4>Feedbacks for this seller</h4>
+{% if feedbacks|length != 0 %}
+<p>This seller received {{Numreviews}} reviews</p>
+<p>Average Rating: {{'%0.2f' % Avgratings}} </p>
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">User</th>
+      <th scope="col">Rating</th>
+      <th scope="col">Review</th>
+      <th scope="col">vote</th>
+      <th scope="col">Time submitted</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for feedback in feedbacks %}
+    <tr>
+        <td> {{feedback.uid}} </td>
+        <td> {{feedback.rating}} </td>
+        <td> {{feedback.review}} </td>
+        <td> {{feedback.vote}}</td>
+        <td> {{feedback.time_submitted}} </td>
+        <td> <a href="{{ url_for('users.voteStatus', uid = feedback.uid, sid = feedback.sid) }}" type="button" class="btn btn-light">vote</a></td>
+        
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% else %}
+<p> no feedbacks for this seller </p>
+
 {% endif %}
 
+{% else %}
+<p>[This is not a seller]<p>
+{% endif %}
+<br><br><br>
 
-
-
-
-
-
-
-   
-    
 {% endblock %}
 
 

@@ -2,10 +2,27 @@
 {% block content %}
 
 
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+  {% for message in messages %}
+  <li>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+
+
+{% if commented|length != 0 %}
+<h2>Thanks for sharing your feedback of this seller! You can update your feedback here</h2>
+<a href="{{ url_for('users.profile') }}" type="button" class="btn btn-light">Click here to view/update your feedback</a>
+ 
+{% else %}
 <h1>How do you feel about this product?</h1>
 <form action="" method="post">
 <br>
-
+ 
     {{ form.hidden_tag() }}
     <p>
         {{ form.ratings.label }}<br/>
@@ -16,11 +33,10 @@
         {{form.feedback.label}}
         {{form.feedback(size=35)}}
         </p>
-
+ 
         <p>{{ form.submit() }}</p>
-    </form>
-
-
+</form>
+{% endif %}
 
     
 {% endblock %}

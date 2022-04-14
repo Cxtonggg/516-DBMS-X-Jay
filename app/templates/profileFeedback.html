@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Feedbacks Received: </h2>
+
+{% if feedbackReceived|length != 0 %}
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">User</th>
+      <th scope="col">Rating</th>
+      <th scope="col">Review</th>
+      <th scope="col">vote</th>
+      <th scope="col">Time submitted</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for feedback in feedbackReceived %}
+    <tr>
+        <td> {{feedback.uid}} </td>
+        <td> {{feedback.rating}} </td>
+        <td> {{feedback.review}} </td>
+        <td> {{feedback.vote}}</td>
+        <td> {{feedback.time_submitted}} </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% else %}
+<p>No feedback received yet</p>
+{% endif %}
+
+
+<br>
+<h2>Feedbacks I submitted: </h2>
+<h4>For products: </h4>
+{% if myFeedbackProduct|length != 0 %}
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Pid</th>
+      <th scope="col">Product Name</th>
+      <th scope="col">Rating</th>
+      <th scope="col">Review</th>
+      <th scope="col">Time submitted</th>
+      <th scope="col"></th>
+
+    </tr>
+  </thead>
+  <tbody>
+    {% for feedback in myFeedbackProduct %}
+    <tr>
+        <td> {{feedback.pid}} </td>
+        <td> {{feedback.productname}} </td>
+        <td> {{feedback.rating}} </td>
+        <td> {{feedback.review}} </td>
+        <td> {{feedback.time_submitted}} </td>
+        <td> 
+            <a href="{{ url_for('users.updateProductFeedback', pid = feedback.pid)}}" type="button" class="btn btn-light">Update</a>
+            <a href="{{ url_for('users.removeProductFeedback', pid = feedback.pid) }}" class="btn btn-danger btn-sm" role="button">Remove</a>
+        </td>
+
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% else %}
+<p>No feedback yet</p>
+{% endif %}
+
+<h4>For sellers: </h4>
+
+{% if myFeedbackSeller|length != 0 %}
+<table class='table table-hover table-bordered container'>
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Seller ID</th>
+      <th scope="col">Seller Name</th>
+      <th scope="col">Rating</th>
+      <th scope="col">Review</th>
+      <th scope="col">Time submitted</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for feedback in myFeedbackSeller %}
+    <tr>
+        <td> {{feedback.sid}} </td>
+        <td> {{feedback.sellerFname}} {{feedback.sellerLname}} </td>
+        <td> {{feedback.rating}} </td>
+        <td> {{feedback.review}} </td>
+        <td> {{feedback.time_submitted}} </td>
+        <td> <a href="{{ url_for('users.updateSellerFeedback', sid = feedback.sid) }}" type="button" class="btn btn-light">update</a>
+             <a href="{{ url_for('users.removeSellerFeedback', sid = feedback.sid) }}" class="btn btn-danger btn-sm" role="button">Remove</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% else %}
+<p>No feedback yet</p>
+{% endif %}
+
+
+
+{% endblock %}
+
+

@@ -24,6 +24,7 @@ CREATE TABLE Purchases (
     uid INT NOT NULL REFERENCES Users(id),
     pid INT NOT NULL REFERENCES Products(id),
     sid INT NOT NULL REFERENCES Users(id),
+    finalprice DECIMAL(12,2) NOT NULL,
     fulfillState BOOLEAN DEFAULT FALSE,  
     quantity INT NOT NULL,
     time_purchased timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
@@ -31,23 +32,9 @@ CREATE TABLE Purchases (
 );
 
 
-CREATE TABLE Product_Feedback(
-    uid INT NOT NULL REFERENCES Users(id),
-    pid INT NOT NULL REFERENCES Products(id),
-    ratings INT NOT NULL,
-    review VARCHAR(3000) NOT NULL,
-    time_submitted timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
-    vote INT NOT NULL DEFAULT 0
-);
+ALTER TABLE ONLY Purchases
+    ADD CONSTRAINT purchases_pkey PRIMARY KEY (id, pid, sid);
 
-CREATE TABLE Seller_Feedback(
-    uid INT NOT NULL REFERENCES Users(id),
-    sid INT NOT NULL REFERENCES Users(id),
-    ratings INT NOT NULL,
-    review VARCHAR(3000) NOT NULL,
-    time_submitted timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
-    vote INT NOT NULL DEFAULT 0
-);
 ------------------------------------
 -- below are changes for users
 
@@ -103,8 +90,30 @@ ALTER TABLE ONLY Cart
 ALTER TABLE ONLY Cart
     ADD CONSTRAINT cart_sid_fkey FOREIGN KEY (sid) REFERENCES Users(id);
 
-------------------------------------
--- below are changes for feedback
+
+--------------------------------------
+-- below is for feedback
+
+
+CREATE TABLE Product_Feedback(
+    uid INT NOT NULL REFERENCES Users(id),
+    pid INT NOT NULL REFERENCES Products(id),
+    ratings INT NOT NULL,
+    review VARCHAR(3000) NOT NULL,
+    time_submitted timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
+    vote INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE Seller_Feedback(
+    uid INT NOT NULL REFERENCES Users(id),
+    sid INT NOT NULL REFERENCES Users(id),
+    ratings INT NOT NULL,
+    review VARCHAR(3000) NOT NULL,
+    time_submitted timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC'),
+    vote INT NOT NULL DEFAULT 0
+);
+
+
 ALTER TABLE ONLY Product_Feedback
     ADD CONSTRAINT Product_Feedback_pkey PRIMARY KEY (uid, pid);
 

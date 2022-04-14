@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+  {% for message in messages %}
+  <li>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+
+<h1>How do you feel about this Product?</h1>
+<form action="" method="post">
+<br>
+ 
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.ratings.label }}<br/>
+        {{ form.ratings(size=32) }}<br/>
+        {% for error in form.ratings.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+        {{form.feedback.label}}
+        {{form.feedback(size=35)}}
+        </p>
+ 
+        <p>{{ form.submit() }}</p>
+</form>
+
+
+{% endblock %}
