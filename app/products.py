@@ -42,6 +42,7 @@ def editproductdetails(pid, sid):# get all available products for sale:
         product = Product.get(pid)
         seller_info = Product.getSellerInfo(pid)
         Numreviews, Avgratings = feedbackToProduct.SummaryRatings(int(pid))
+        ratings_and_reviews = Product.get_product_ratings_and_reviews(pid)
         return render_template('productdetails.html', avail_products = [product],seller_info = seller_info, ratings_and_reviews = ratings_and_reviews, Numreviews = Numreviews, Avgratings = Avgratings)
     return render_template('edit_productdetails.html', pid=pid, sid=sid, updateform=updateform)
 
